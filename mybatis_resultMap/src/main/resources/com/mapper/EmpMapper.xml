@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.EmpMapper">
+    <!-- Emp getEmpByEmpid(@Param("empId") Integer empId);  -->
+    <!-- 当字段名和属性名不一致，如何处理映射关系
+    1、为查询的字段设置别名，和属性名保持一致
+    2、当字段符合MySQL的要求使用_,而属性符合java的要求使用驼峰
+    此时可与在Mybatis的核心配置文件中设置一个全局配置，可与将下划线映射为驼峰
+    -->
+    <!--     <select id="getEmpByEmpid"  resultType="Emp"> -->
+    <!--        select * from t_emp where  emp_id = #{empId} -->
+    <!-- &lt;!&ndash;select emp_id empId,emp_name empName,age,gender from t_emp where  emp_id = #{empId} -->
+    <!--  &ndash;&gt; -->
+    <!-- </select> -->
+
+
+    <!--
+        resultMap:设置自定义的映射关系
+        id:唯一标识
+        type:处理映射关系的实体类的类型
+        常用标签：
+        id: 处理主键和实体类中属性的映射关系
+        result:处理普通字段（column：sql中的某个字段）和实体类中属性（property：实体类类型中的属性名）的映射关系
+        assocation：处理多对一映射关系
+     -->
+    <resultMap id="empResultMap" type="Emp">
+        <id column="emp_id" property="empId"></id>
+        <result column="emp_name" property="empName"></result>
+        <result column="age" property="age"></result>
+        <result column="gender" property="gender"></result>
+    </resultMap>
+
+    <select id="getEmpByEmpid" resultMap="empResultMap">
+        select *
+        from t_emp
+        where emp_id = #{empId}
+    </select>
+
+
+    <!-- 处理多对一映射关系：
+        1. 级联
+     -->
+    <resultMap id="empAndDeptResultMap" type="Emp">
+        <id column="emp_id" property="empId"></id>
+        <result column="emp_name" property="empName"></result>
+        <result column="age" property="age"></result>
+        <result column="gender" property="gender"></result>
+        <result column="dept_id" property="dept.deptId"></result>
+        <result column="dept_name" property="dept.deptName"></result>
+    </resultMap>
+
+    <!-- 2.使用assocation处理多对一的映射关系
+           property：设置需要处理映射关系的属性的属性名
+           javaType: 设置要处理属性的类型
+     -->
+    <resultMap id="empAndDeptResultMap2" type="Emp">
+        <id column="emp_id" property="empId"></id>
+        <result column="emp_name" property="empName"></result>
+        <result column="age" property="age"></result>
+        <result column="gender" property="gender"></result>
+        <association property="dept" javaType="Dept">
+            <id column="dept_id" property="deptName"></id>
+            <result column="dept_name" property="deptName"></result>
+        </association>
+    </resultMap>
+
+    <!--  Emp getEmpAndDeptByEmpId(@Param("empId") Integer empId); -->
+    <select id="getEmpAndDeptByEmpId" resultMap="empAndDeptResultMap2">
+        select t_emp.*, td.*
+        from t_emp
+                 left join t_dept td on t_emp.dept_id = td.dept_id
+        where emp_id = #{empId}
+    </select>
+
+
+    <!-- 3.分步查询 -->
+    <!--  association property 设置需要处理映射关系的属性的属性名
+          select: 设置分步查询的sql的唯一标识
+          column：将查询出的某几个字段作为分步查询的sql的条件
+          fetcherType：在开启了延迟加载的环境中，通过该属性设置当前的分步查询是否使用延迟加载
+          有两个值：eager(立即加载) lazy(延迟加载)
+    -->
+
+    <resultMap id="empAndDeptByStepResultMap" type="Emp">
+        <id column="emp_id" property="empId"></id>
+        <result column="emp_name" property="empName"></result>
+        <result column="age" property="age"></result>
+        <result column="gender" property="gender"></result>
+        <association property="dept" select="com.mapper.DeptMapper.getEmpAndDeptByStepTwo"
+                     column="dept_id" fetchType="lazy"></association>
+    </resultMap>
+
+    <!-- Emp getEmpAndDeptByStepOne(@Param("empId") Integer empId); -->
+    <select id="getEmpAndDeptByStepOne" resultMap="empAndDeptByStepResultMap">
+        select *
+        from t_emp
+        where emp_id = #{empId}
+    </select>
+
+
+    <!-- 通过collection进行一对多映射分步查询的第二步 -->
+    <select id="getDeptAndEmpByStepTwo" resultType="emp">
+        select *
+        from t_emp
+        where dept_id = #{depId}
+    </select>
+
+
+</mapper>
+

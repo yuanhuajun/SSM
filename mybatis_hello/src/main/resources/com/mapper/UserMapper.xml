@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.UserMapper">
+    <insert id="insertUser">
+        insert into t_user values (null,'yhj','123',20,'男','1121455582@qq.com')
+    </insert>
+
+    <update id="updateUser">
+        update t_user set username='abc',password='zxc' where id = 3;
+    </update>
+
+    <delete id="deleteUser">
+        delete from t_user where id = 5;
+    </delete>
+
+    <select id="getUserById" resultType="user">
+        select * from t_user where id = 3;
+    </select>
+
+
+    <!-- 先转换为实体类型，再放到集合里 -->
+    <select id="getAllUser" resultType="abc">
+        select * from t_user
+    </select>
+</mapper>
+

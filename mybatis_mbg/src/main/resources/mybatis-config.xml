@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!-- 要按照这个顺序
+        properties?,settings?,typeAliases?,typeHandlers?,objectFactory?,objectWrapperFactory?,
+            reflectorFactory?,plugins?,environments?,databaseIdProvider?,mappers-->
+    <properties resource="jdbc.properties"></properties>
+
+
+    <typeAliases>
+        <!--        <typeAlias type="pojo.User" alias="User"></typeAlias>-->
+        <package name=""/>
+    </typeAliases>
+
+    <!-- 配置分页插件 -->
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor"></plugin>
+    </plugins>
+    
+    <!--    配置连接数据库的环境-->
+    <environments default="development">
+        <environment id="development">
+            <!--            事务管理的方式-->
+            <transactionManager type="JDBC"/>
+            <!--            表示使用数据库连接池-->
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <!--    引入映射文件,若通过package，则要保证，映射文件所在的包要和mapper接口所在的包同名
+            并且映射文件名与mapper接口名一一对应-->
+    <mappers>
+        <package name="com.mapper"/>
+    </mappers>
+
+
+</configuration>
