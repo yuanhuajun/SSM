@@ -22,7 +22,7 @@ import java.util.List;
 
 
 public class MyBatisTest {
-
+1
     @Test
     public void testInsert() throws IOException {
 
